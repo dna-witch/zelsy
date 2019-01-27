@@ -5,6 +5,7 @@ from watson_developer_cloud import WatsonApiException
 import json
 from nltk.tokenize import TweetTokenizer
 import numpy as np 
+from twilio.rest import Client
 
 
 # read dairy file into the system as a list, every item will be a string
@@ -75,13 +76,13 @@ def mood_counter(t_list):
         else:
             word_counter[word] = 1
     popular_words = sorted(word_counter, key = word_counter.get, reverse = True)
-    dominate_mood = popular_words[0]
-    return dominate_mood
+    dominant_mood = popular_words[0]
+    return dominant_mood
 
 
 # get the score of your mood
 # make a threshold, send message or not, give sources
-# input: list of strtings from get_dairy()
+# input: list of strtings from get_diary()
 # output: score, threshold = -0.6
 def get_score(input_diary):
     score = []
@@ -110,8 +111,27 @@ def get_score(input_diary):
 
 
 # if you are "negative" and the score in high, send a message
+# Your Account SID from twilio.com/console
+account_sid = "ACe9dcc22c9db899868a627562292d7c4b"
+# Your Auth Token from twilio.com/console
+auth_token  = "0071b3cf8c984f389f9eb1e1b631806b"
+def send_message(dominant_mood, score):
+    client = Client(account_sid, auth_token)
+    message = client.messages.create(
+        to="+19258954933",
+        from_="+18052629284",
+        body="Hello from Zelsy! Our goal at Zelsy is to connect people and teach them about mental health.")
 
-#def send_message(dominate_mood, score):
+    print(message.sid)
+    if dominant_mood in ["sadness", "angry", "fear"] and score < float(-0.6):
+        
+        message = client.messages.create(
+            to="+19258954933",
+            from_="+18052629284",
+            body="Hello from Zelsy! Your friend, Erica, is in need of your friendship and support right now!")
+
+        print(message.sid)
+
 
 
 if __name__ == "__main__":
@@ -120,14 +140,9 @@ if __name__ == "__main__":
     #print(get_main_tone(get_diary()))
     input_text = get_diary()
     mood_list = get_main_tone(input_text)
+    dominant_mood = mood_counter(mood_list)
+    score = get_score(input_text)
 
     print("Your mood score is %f" %get_score(input_text))
-    print("Your dominate mood is " + mood_counter(mood_list))
-
-
-"""
-
-
-blob1 = TextBlob("i hate monday but i love california")
-print (format(blob1.sentiment))
-"""
+    print("Your dominant mood is " + mood_counter(mood_list))
+    send_message(dominant_mood, score)
