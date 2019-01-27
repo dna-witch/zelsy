@@ -3,25 +3,27 @@ from textblob import TextBlob
 from watson_developer_cloud import ToneAnalyzerV3
 from watson_developer_cloud import WatsonApiException
 import json
+import numpy as np 
 
 
 # read dairy file into the system as a list, every item will be a string
 
-def get_dairy():
-    file_name = "text"
+def get_diary():
+    file_name = "negative"
     with open( file_name, "r") as f:
-        dairy = f.readlines()
-        dairy = [x.strip() for x in dairy] 
-    return dairy
+        diary = f.readlines()
+        diary = [x.strip() for x in diary] 
+    return diary
 
 # get ghe tone for each dairy
 # input: string
 # output: json file contain the tone for each sentence, maybe return the main mood
-def get_main_tone(dairy):
+def get_main_tone(diary):
+    open('data.json', "w").close()
     outfile = open('data.json', 'a')
     outfile.write('[')
     counter = 0
-    for element in dairy:
+    for element in diary:
         # analysis of tone for each sentence
         tone_analyzer = ToneAnalyzerV3(
                         version='2017-09-21',
@@ -53,30 +55,44 @@ def get_main_tone(dairy):
 
     # get list of mood
     tone_list = []
-    for tone in tone_dict['sentences_tone']:
-        for index in range(0,len(tone['tones'])):
-            mood = tone['tones'][index]['tone_id']
-            print(mood)
-            tone_list.append(mood)
+    for each_json in tone_dict:
+        for tone in each_json['sentences_tone']:
+            for index in range(0,len(tone['tones'])):
+                mood = tone['tones'][index]['tone_id']
+                tone_list.append(mood)
     return tone_list
 
-print(get_main_tone(get_dairy()))  
+print(get_main_tone(get_diary()))  
 
 # get the score of your mood
 # make a threshold, send message or not, give sources
-# input: string
+# input: list of strtings from get_dairy()
 # output: score
-# def get_score(text):
+def get_score(input_diary):
+    score = []
+    subjectivity = []
+    red_flag = []
+    red = 0
+    for sentence in input_diary:
+        blob = TextBlob(sentence)
+        score.append(blob.sentiment[0])
+        subjectivity.append(blob.sentiment[1])
+        for word in sentence:
+            if word in red_flag:
+                red = red + 1
+    # get average score in range [-1.0, 1.0]
+    score = np.array(score)
+    subjectivity = np.array(subjectivity)
+    mean_score = np.mean(score) + red*(-0.2)
+    mean_subjectivity = np.mean(subjectivity) 
+    return mean_score
+
+print(get_score(get_diary()))
 
 
+# if you are "negative" and the score in high, send a message
 
-# # fitbit
-# def fitbit_score():
-
-
-# # if you are "negative" and the score in high, send a message
-# # topolio?
-# def send_message(mood, score):
+#def send_message(mood, score):
 
 
 
