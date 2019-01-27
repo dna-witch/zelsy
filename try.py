@@ -3,13 +3,15 @@ from textblob import TextBlob
 from watson_developer_cloud import ToneAnalyzerV3
 from watson_developer_cloud import WatsonApiException
 import json
+from nltk.tokenize import TweetTokenizer
 import numpy as np 
 
 
 # read dairy file into the system as a list, every item will be a string
+tknzr = TweetTokenizer(strip_handles=True, reduce_len=True)
 
 def get_diary():
-    file_name = "negative"
+    #file_name = "negative"
     with open( file_name, "r") as f:
         diary = f.readlines()
         diary = [x.strip() for x in diary] 
@@ -62,7 +64,20 @@ def get_main_tone(diary):
                 tone_list.append(mood)
     return tone_list
 
-print(get_main_tone(get_diary()))  
+# most frequent mood
+# input: list 
+# output: list of only one element 
+def mood_counter(t_list):
+    word_counter = {}
+    for word in t_list:
+        if word in word_counter:
+            word_counter[word] += 1
+        else:
+            word_counter[word] = 1
+    popular_words = sorted(word_counter, key = word_counter.get, reverse = True)
+    dominate_mood = popular_words[0]
+    return dominate_mood
+
 
 # get the score of your mood
 # make a threshold, send message or not, give sources
@@ -81,28 +96,34 @@ def get_score(input_diary):
         blob = TextBlob(sentence)
         score.append(blob.sentiment[0])
         subjectivity.append(blob.sentiment[1])
+        sentence = tknzr.tokenize(sentence)
         for word in sentence:
             if word in red_flag:
                 red = red + 1
     # get average score in range [-1.0, 1.0]
     score = np.array(score)
     subjectivity = np.array(subjectivity)
-    mean_score = np.mean(score) + red*(-0.2)
+    mean_score = np.mean(score)+ red*(-0.2)
     mean_subjectivity = np.mean(subjectivity) 
+    
     return mean_score
-
-print(get_score(get_diary()))
 
 
 # if you are "negative" and the score in high, send a message
 
-#def send_message(mood, score):
+#def send_message(dominate_mood, score):
 
-
-
-def main():
 
 if __name__ == "__main__":
+    file_name = "negative"
+    #file_name = "text"
+    #print(get_main_tone(get_diary()))
+    input_text = get_diary()
+    mood_list = get_main_tone(input_text)
+
+    print("Your mood score is %f" %get_score(input_text))
+    print("Your dominate mood is " + mood_counter(mood_list))
+
 
 """
 
