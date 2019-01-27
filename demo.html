@@ -12,6 +12,24 @@
     flex-direction: column;
     max-width: 300px;
   }
+  .btn {
+  border: none;
+  background-color: #9370DB;
+  padding: 14px 28px;
+  font-size: 16px;
+  cursor: pointer;
+  display: inline-block;
+}
+
+/* Green */
+.Save {
+  color: green;
+}
+
+.Save:hover {
+  background-color: #4CAF50;
+  color: white;
+}
   </style>
 </head>
 <body>
@@ -21,7 +39,7 @@
           rows="5" cols="33">
 It was a dark and stormy night...
 </textarea>
-<button id="Save">
+<button class="btn" id="Save">
 Save
 </button>
 <div id="entriesContainer">
