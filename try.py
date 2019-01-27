@@ -67,11 +67,15 @@ print(get_main_tone(get_diary()))
 # get the score of your mood
 # make a threshold, send message or not, give sources
 # input: list of strtings from get_dairy()
-# output: score
+# output: score, threshold = -0.6
 def get_score(input_diary):
     score = []
     subjectivity = []
-    red_flag = []
+    red_flag = ["kill","hurt","cut","hate","worst","horrible","awful","repulsive",
+                "loathsome","obnoxious","disgusting","pesky","sad","crying","depressed",
+                "anxious","scared","afraid","lethal","die","harm","pointless","fatal","injure",
+                "violent","toxic","murder","suicidal"]
+
     red = 0
     for sentence in input_diary:
         blob = TextBlob(sentence)
@@ -96,7 +100,9 @@ print(get_score(get_diary()))
 
 
 
-# def main():
+def main():
+
+if __name__ == "__main__":
 
 """
 
