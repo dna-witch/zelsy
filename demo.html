@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>ZELSY Demo</title>
+  <meta name="description" content="ZELSY Demo">
+  <meta name="author" content="SitePoint">
+  <link rel="stylesheet" href="css/styles.css?v=1.0">
+  <style>
+  .container {
+    display: flex;
+    flex-direction: column;
+    max-width: 300px;
+  }
+  </style>
+</head>
+<body>
+  <div class="container">
+  <label for="Journal">Write about your feelings here:</label>
+  <textarea id="Journal" name="Journal"
+          rows="5" cols="33">
+It was a dark and stormy night...
+</textarea>
+<button id="Save">
+Save
+</button>
+<div id="entriesContainer">
+
+</div>
+  </div>
+   <script>
+    document.getElementById("Save").addEventListener("click", function()
+  {
+    var entry = document.getElementById("Journal").value
+    var entryTag = document.createElement("div");
+    entryTag.innerHTML = entry;
+
+    document.getElementById("entriesContainer").appendChild(entryTag)
+  })
+  </script>
+</body>
+</html>
